@@ -12,9 +12,16 @@ The problem of SLAM is than solved using graph-based approach. In the graph, the
 
 ### Initialization
 
+The dataset providing all the measuraments is in g2o format. Hence a parser has been used to acquire the information is form of struct array. The robot poses have been reconstructed using the origial odometry and the transitions provided in the dataset. Differently, the landmarks' poses have been reconstructed using two different strategy.
+
+[pip](https://pip.pypa.io/en/stable/)
 
 ### Least-Squares Error Minimization
 
-http://cal.cs.illinois.edu/~johannes/research/LS_line_intersect.pdf
+[Johannes Traa](http://cal.cs.illinois.edu/~johannes/research/LS_line_intersect.pdf)
 
-http://www-personal.acfr.usyd.edu.au/tbailey/papers/icra03.pdf
+[Tim Bailey] (http://www-personal.acfr.usyd.edu.au/tbailey/papers/icra03.pdf)
+
+```matlab
+code
+```
