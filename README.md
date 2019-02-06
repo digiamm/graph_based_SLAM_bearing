@@ -26,11 +26,11 @@ The dataset providing all the measuraments is in ```g2o``` format. Hence a parse
 
 ### Least-Squares Error Minimization
 
--intro to Least Squares
--manifold version
--use damping factor to prevent singularities
--solve sparse linear system
--plot matrix H and chi
+- intro to Least Squares
+- manifold version
+- use damping factor to prevent singularities
+- solve sparse linear system
+- plot matrix H and chi
 
 #### Run
 
