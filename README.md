@@ -12,15 +12,15 @@ The problem of SLAM is than solved using graph-based approach. In the graph, the
 
 ### Initialization
 
-The dataset providing all the measuraments is in g2o format. Hence a parser has been used to acquire the information is form of struct array. The robot poses have been reconstructed using the origial odometry and the transitions provided in the dataset. Differently, the landmarks' poses have been reconstructed using two different strategy.
+The dataset providing all the measuraments is in g2o format. Hence a parser has been used to acquire the information is form of struct array. The robot poses have been reconstructed using the origial odometry and the transitions provided in the dataset. Differently, the landmarks' poses have been reconstructed using two different strategies.
 
-[pip](https://pip.pypa.io/en/stable/)
+- The first, proposed by [Johannes Traa](http://cal.cs.illinois.edu/~johannes/research/LS_line_intersect.pdf) that uses a non iterative least-squares approach to find the intersection of lines. Therefore, for each landmark all bearing measuraments have been stored. All of these bearing measuraments and the robot poses from which the robot observers the landamark have been used to generate the lines. For K lines, they may all intersect at a unique point, only in pairs, or in other ways. A unique solution to the “intersection” of the set of lines in a least-squares sense can be obtained by minimize the sum of squared distances. This method, that allows to use all the measuraments from each landmarks does not seem to perform well.
 
 ### Least-Squares Error Minimization
 
 [Johannes Traa](http://cal.cs.illinois.edu/~johannes/research/LS_line_intersect.pdf)
 
-[Tim Bailey] (http://www-personal.acfr.usyd.edu.au/tbailey/papers/icra03.pdf)
+[Tim Bailey](http://www-personal.acfr.usyd.edu.au/tbailey/papers/icra03.pdf)
 
 ```matlab
 code
