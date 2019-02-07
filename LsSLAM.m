@@ -132,6 +132,7 @@ num_iterations=25;	% 10, 25
 
 
 
+
 % Robot position ground truth
 XR_true= zeros(3,3,num_poses);
 global id_poses= zeros(1,num_poses);
@@ -175,11 +176,11 @@ hold on;
 grid;
 title("chi evolution");
 
-subplot(2,1,1);
+subplot(3,1,1);
 plot(chi_stats_r, 'r-', "linewidth", 2);
 legend("Chi Poses"); grid; xlabel("iterations");
 
-subplot(2,1,2);
+subplot(3,1,2);
 plot(chi_stats_l, 'b-', "linewidth", 2);
 legend("Chi Landmarks"); grid; xlabel("iterations");
 
@@ -194,3 +195,8 @@ H_ = flipud(H_);                 # switch rows
 colormap(gray(64));
 hold on;
 image([0.5, size(H_,2)-0.5], [0.5, size(H_,1)-0.5], H_*64);
+
+figure(5)
+hold on;
+grid;
+title("chi evolution");

@@ -74,7 +74,7 @@ function [XR, XL, chi_stats_l, num_inliers_l, chi_stats_r, num_inliers_r, H, b] 
 
   # size of the linear system
   system_size=pose_dim*num_poses+landmark_dim*num_landmarks;
-  chi_tot =0;
+
   for (iteration=1:num_iterations)
     H=zeros(system_size, system_size);
     b=zeros(system_size,1);
@@ -84,11 +84,9 @@ function [XR, XL, chi_stats_l, num_inliers_l, chi_stats_r, num_inliers_r, H, b] 
       chi_stats_l(iteration)=chi_;
       num_inliers_l(iteration)=num_inliers_;
     endif;
-    chi_tot += chi_;
     [H_poses, b_poses, chi_, num_inliers_] = linearizePoses(XR, XL, Zr, pose_associations,num_poses, num_landmarks, kernel_threshold);
     chi_stats_r(iteration)+=chi_;
     num_inliers_r(iteration)=num_inliers_;
-    chi_tot += chi_;
 
     H=H_poses;
     b=b_poses;
@@ -105,10 +103,11 @@ function [XR, XL, chi_stats_l, num_inliers_l, chi_stats_r, num_inliers_r, H, b] 
     % of the 1st pose, while solving the system
 
     dx(pose_dim+1:end)=-(H(pose_dim+1:end,pose_dim+1:end)\b(pose_dim+1:end,1));
-    [XR, XL]=boxPlus(XR,XL,num_poses, num_landmarks, dx);
+    [XR, XL]=boxPlus(XR, XL,num_poses, num_landmarks, dx);
 
-    printf("LS Iteration n %i\t -- Chi square : %f\n", iteration, chi_tot);
 
+
+    printf("LS Iteration n %i\n", iteration);
 
   endfor
 endfunction
