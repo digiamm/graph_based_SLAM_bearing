@@ -26,14 +26,18 @@ The dataset providing all the measuraments is in ```g2o``` format. Hence a parse
 
 ### Least-Squares Error Minimization
 
-The problem as mentioned before is formulated in terms of non-linear least squares. For this, **Gauss–Newton algorithm** is used as an iterative solver. With a good initial guess this allows to minimize the error and reconstruct the landmark and the history of robot poses. A total least square approach has been applied in this case, linearizing landmark-pose and pose-pose. The system takes the size of the landmarks (142x2) and the poses (100x3) and therefore for this case is not very large (no sparsity problems, computationally not expensive). However, for bearing only SLAM there are some problems due to the singularities of the H matrix (hence, the solution is under-determined). To overcome this problem a damped version of Gauss-Newton is used. Thus at every iteration, instead of solving the system H∆x = b, this solves a damped version of the system:
+The problem as mentioned before is formulated in terms of non-linear least squares. For this, **Gauss–Newton algorithm** is used as an iterative solver. With a good initial guess this allows to minimize the error and reconstruct the landmark and the history of robot poses. A total least square approach has been applied in this case, linearizing landmark-pose and pose-pose. The system takes the size of the landmarks ```142*2``` and the poses ```100*3``` (where 2 and 3 are the minimal representations, x and y for landmark poses and x, y and theta for robot poses) and therefore for this case is not very large (computationally not expensive, but still sparse system). However, for bearing only SLAM there are some problems due to the singularities of the H matrix (hence, the solution is under-determined). To overcome this problem a damped version of Gauss-Newton is used. Thus at every iteration, instead of solving the system H∆x = b, this solves a damped version of the system:
 (H + λI)∆x = b. Intitively, the higher is the damping factor λ, the smaller are the increments.
+
+#### Chi error and sparsity of H matrix
+
+![Chi error and H matrix](images/pic.jpg)
 
 
 ##### Manifold
-To deal with parameter blocks that span over a non-Euclidean spaces, it is common to apply the error minimization on a manifold. A manifold is a mathematical space that is not necessarily Euclidean on a global scale, but can be seen as Euclidean on a local scale. In the context of SLAM problem, each parameter block of the state consists of a translation vector and a rotational component. Hence to prevent singularities, it is important to consider the underlying space as a manifold and to define an operator *boxplus* that maps a local variation of the state in the Euclidean space to a variation on the manifold [ref](http://www.dis.uniroma1.it/~grisetti/teaching/lectures-ls-slam-master_2015_16/web/reading_material/grisetti12stest.pdf).
 
-- plot matrix H and chi
+To deal with parameter blocks that span over a non-Euclidean spaces, it is common to apply the error minimization on a manifold. A manifold is a mathematical space that is not necessarily Euclidean on a global scale, but can be seen as Euclidean on a local scale. In the context of SLAM problem, each parameter block of the state consists of a translation vector and a rotational component. Hence to prevent singularities, it is important to consider the underlying space as a manifold and to define an operator *boxplus* that maps a local variation of the state in the Euclidean space to a variation on the manifold.
+
 
 #### Run
 
@@ -47,4 +51,8 @@ octave LsSlam.m
 
 This work has been developed incorporating code previously implemented by *Giorgio Grisetti*, *Bartolomeo Della Corte* and *Dominik Schlegel*, from *Sapienza University of Rome*.
 
+#### References
+
+[1](http://www.dis.uniroma1.it/~grisetti/teaching/lectures-ls-slam-master_2015_16/web/reading_material/grisetti12stest.pdf)
+[2](http://www2.informatik.uni-freiburg.de/~stachnis/pdf/grisetti10titsmag.pdf)
 
