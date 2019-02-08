@@ -12,8 +12,6 @@ function Xl = parallax(Xri, Xrj, bearingi, bearingj)
   abs_bearing_i = theta_i+bearingi;
   abs_bearing_j = theta_j+bearingj;
 
-  % abs_bearing_i = atan2(sin(abs_bearing_i), cos(abs_bearing_i));
-  % abs_bearing_j = atan2(sin(abs_bearing_j), cos(abs_bearing_j));
 
   % get trigonometric function
   s_i = sin(abs_bearing_i);

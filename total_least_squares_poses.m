@@ -3,54 +3,53 @@ source "./total_least_squares_indices.m"
 
 # error and jacobian of a measured pose, all poses are in world frame
 # input:
-#   Xi: the observing robot pose (4x4 homogeneous matrix)
-#   Xj: the observed robot pose (4x4 homogeneous matrix)
+#   Xi: the observing robot pose (3x3 homogeneous matrix)
+#   Xj: the observed robot pose (3x3 homogeneous matrix)
 #   Z:   the relative transform measured between Xr1 and Xr2
-#   e: 12x1 is the difference between prediction, and measurement, vectorized
-#   Ji : 12x6 derivative w.r.t a the error and a perturbation of the
+#   e: 6x1 is the difference between prediction, and measurement, vectorized
+#   Ji : 6x3 derivative w.r.t a the error and a perturbation of the
 #       first pose
-#   Jj : 12x6 derivative w.r.t a the error and a perturbation of the
+#   Jj : 6x3 derivative w.r.t a the error and a perturbation of the
 #       second pose
 
 function [e,Ji,Jj]=poseErrorAndJacobian(Xi,Xj,Z)	% states expressed wrt World RF
   global R0;
-  %R0=[0 -1; 1 0];
+
 
   Ri=Xi(1:2,1:2);
   Rj=Xj(1:2,1:2);
   ti=Xi(1:2,3);
   tj=Xj(1:2,3);
   tij=tj-ti;
-  Ri_transpose=Ri';
+  Ri_t=Ri';
   Ji=zeros(6,3);		%flatten(dh/dx) flatten(dh/dy) flatten(dh/dtheta)
   Jj=zeros(6,3);
 
   % Chordal Jacobian
-  dR_dax=Ri_transpose*R0*Rj;
+  dR_dax=Ri_t*R0*Rj;
 
   Jj(1:4,3)=reshape(dR_dax, 4, 1);
-  Jj(5:6,3)=Ri_transpose*[-tj(2);tj(1)];
+  Jj(5:6,3)=Ri_t*[-tj(2);tj(1)];
 
-  Jj(5:6,1:2)=Ri_transpose;
+  Jj(5:6,1:2)=Ri_t;
   Ji=-Jj;
 
 
   % Chordal distance
   Z_hat=eye(3);
-  Z_hat(1:2,1:2)=Ri_transpose*Rj;
-  Z_hat(1:2,3)=Ri_transpose*tij;
+  Z_hat(1:2,1:2)=Ri_t*Rj;
+  Z_hat(1:2,3)=Ri_t*tij;
 
-
-
-  e=flattenIsometryByColumns(Z_hat-Z);	% 6x1
+  % eorro flattened  - 6x1
+  e=flattenIsometryByColumns(Z_hat-Z);
 
  endfunction;
 
 #linearizes the robot-robot measurements
 # inputs:
-#   XR: the initial robot poses (4x4xnum_poses: array of homogeneous matrices)
-#   XL: the initial landmark estimates (3xnum_landmarks matrix of landmarks)
-#   ZR: the robot_robot measuremenrs (4x4xnum_measurements: array of homogeneous matrices)
+#   XR: the initial robot poses (3x3xnum_poses: array of homogeneous matrices)
+#   XL: the initial landmark estimates (2xnum_landmarks matrix of landmarks)
+#   ZR: the robot_robot measuremenrs (3x3xnum_measurements: array of homogeneous matrices)
 #   associations: 2xnum_measurements.
 #                 associations(:,k)=[i_idx, j_idx]' means the kth measurement
 #                 refers to an observation made from pose i_idx, that
@@ -77,7 +76,6 @@ function [H,b, chi_tot, num_inliers]=linearizePoses(XR, XL, Zr, associations,num
 
   for (measurement_num=1:size(Zr,3))
     Omega=inv(eye(6)*100);
-    %Omega(1:9,1:9)*=1e3;
 
     pose_i_index=associations(1,measurement_num);
     pose_j_index=associations(2,measurement_num);
@@ -103,7 +101,6 @@ function [H,b, chi_tot, num_inliers]=linearizePoses(XR, XL, Zr, associations,num
 
 
     [e,Ji,Jj] = poseErrorAndJacobian(Xi, Xj, Z);
-     %e=[0;0;0;0;0;0;0;0;0;0;0;0];
     chi=e'*Omega*e;
 
     if (chi>kernel_threshold)

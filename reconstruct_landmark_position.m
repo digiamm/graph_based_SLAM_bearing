@@ -23,11 +23,7 @@ function XL_guess = reconstruct_landmark_position(observations, XR_guess)
           bearingj = observations(zj).bearing;
 
           if(land_idi==land_idj)
-            % printf("Bearing i %f, Bearing j %f\n", bearingi, bearingj);
-            % pause(0.5);
-
-            % retrieve current position from pose id
-
+            
             Xri = t2v(XR_guess(:,:, poses_id(pose_idi)));
             Xrj = t2v(XR_guess(:,:, poses_id(pose_idj)));
 

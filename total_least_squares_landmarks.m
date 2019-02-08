@@ -6,14 +6,14 @@ source "./total_least_squares_indices.m"
 
 # error and jacobian of a measured landmark
 # input:
-#   Xr: the robot pose in world frame (4x4 homogeneous matrix)
-#   Xl: the landmark pose (3x1 vector, 3d pose in world frame)
-#   z:  measured position of landmark
+#   Xr: the robot pose in world frame (3x3 homogeneous matrix)
+#   Xl: the landmark pose (2x1 vector, 2d pose in world frame)
+#   z:  measured bearing of landmark
 # output:
-#   e: 3x1 is the difference between prediction and measurement
-#   Jr: 3x6 derivative w.r.t a the error and a perturbation on the
+#   e: scalar -  is the difference between prediction and measurement
+#   Jr: 1x3 derivative w.r.t a the error and a perturbation on the
 #       pose
-#   Jl: 3x3 derivative w.r.t a the error and a perturbation on the
+#   Jl: 1x2 derivative w.r.t a the error and a perturbation on the
 #       landmark
 
 function [e,JR,JL]=landmarkErrorAndJacobian(Xr,Xl,z)
@@ -21,11 +21,10 @@ function [e,JR,JL]=landmarkErrorAndJacobian(Xr,Xl,z)
   Rt=Xr(1:2,1:2)';
   ti=-Rt*Xr(1:2,3);
 
-  #prediction
+
   z_hat=Rt*Xl+ti;
-  %h = normalizeAngle(z_hat);
   h = atan2(z_hat(2), z_hat(1));
-  e=h-z;		%t2v(v2t(z)^-1 v2t(h)) KEEP ATTEMPTION
+  e=h-z;
 
   Jtan = inv(z_hat(2)^2+z_hat(1)^2) * [-z_hat(2), z_hat(1)];
   Jr=zeros(2,3);
@@ -38,9 +37,9 @@ endfunction;
 
 
 #linearizes the robot-landmark measurements
-#   XR: the initial robot poses (4x4xnum_poses: array of homogeneous matrices)
-#   XL: the initial landmark estimates (3xnum_landmarks matrix of landmarks)
-#   Z:  the measurements (3xnum_measurements)
+#   XR: the initial robot poses (3x3xnum_poses: array of homogeneous matrices)
+#   XL: the initial landmark estimates (2xnum_landmarks matrix of landmarks)
+#   Z:  the measurements (1xnum_measurements)
 #   associations: 2xnum_measurements.
 #                 associations(:,k)=[p_idx,l_idx]' means the kth measurement
 #                 refers to an observation made from pose p_idx, that
@@ -101,7 +100,7 @@ function [H,b, chi_tot, num_inliers]=linearizeLandmarks(XR, XL, Zl, associations
       num_inliers++;
     endif;
     chi_tot+=chi;
-    
+
     pose_matrix_index=poseMatrixIndex(pose_index, num_poses, num_landmarks);
     landmark_matrix_index=landmarkMatrixIndex(landmark_index, num_poses, num_landmarks);
 
