@@ -19,17 +19,23 @@ The dataset providing all the measuraments is in ```g2o``` format. Hence a parse
 ![Landmark_Map - Initial Guess Line Intersection](images/int_land.png)
 ![Trajectory_Map - Initial Guess Line Intersection](images/int_tra.png)
 
-- The second, differently seem to perform well. This has been implemented following a basic **geometric triangulation** proposed by [Bailey](http://www-personal.acfr.usyd.edu.au/tbailey/papers/icra03.pdf) which allows to *reconstruct a landmark position from two robot poses and their relative orientations and bearings*. In order to find a good initial guess of the landmark pose, the tringulation needs to come from two distant robot poses, with different bearings and orientations. This in fact produces the reconstruction of less landmarks compared to the ones originally provided but with a sufficiently good initial guess that allows the robot to reconstruct the map and to localize much more accurately compared to the previous approach. In this experiment, 110 landmarks of 142 have been reconstructed. 
+- The second, differently seem to perform well. This has been implemented following a basic **geometric triangulation** proposed by [Bailey](http://www-personal.acfr.usyd.edu.au/tbailey/papers/icra03.pdf) which allows to *reconstruct a landmark position from two robot poses and their relative orientations and bearings*. In order to find a good initial guess of the landmark pose, the tringulation needs to come from two distant robot poses, with different bearings and orientations. This in fact produces the reconstruction of less landmarks compared to the ones originally provided but with a sufficiently good initial guess that allows the robot to reconstruct the map and to localize much more accurately compared to the previous approach. In this experiment, 124 landmarks of 142 have been reconstructed. 
 
 ![Landmark_Map - Initial Guess Triangulation](images/tri_map.png)
 ![Trajectory_Map - Initial Guess Line Triangulation](images/tri_tra.png)
 
 ### Least-Squares Error Minimization
 
-The problem as mentioned before is formulated in terms of non-linear least squares. For this, **Gauss–Newton algorithm** is used as an iterative solver. With a good initial guess this allows to minimize the error and reconstruct the landmark and the history of robot poses. A total least square approach has been applied in this case, linearizing landmark-pose and pose-pose. The system takes the size of the landmarks ```142*2``` and the poses ```100*3``` (where 2 and 3 are the minimal representations, x and y for landmark poses and x, y and theta for robot poses) and therefore for this case is not very large (computationally not expensive, but still sparse system). However, for bearing only SLAM there are some problems due to the singularities of the H matrix (hence, the solution is under-determined). To overcome this problem a damped version of Gauss-Newton is used. Thus at every iteration, instead of solving the system H∆x = b, this solves a damped version of the system:
-(H + λI)∆x = b. Intitively, the higher is the damping factor λ, the smaller are the increments.
+The problem as mentioned before is formulated in terms of non-linear least squares. For this, **Gauss–Newton algorithm** is used as an iterative solver. With a good initial guess this allows to minimize the error and reconstruct the landmark and the history of robot poses. A total least square approach has been applied in this case, linearizing landmark-pose and pose-pose. The system takes the size of the landmarks ```num_of_landmarks*2``` and the poses ```num_of_poses*3``` (where 2 and 3 are the minimal representations, *x* and *y* for landmark poses and *x*, *y* and *theta* for robot poses) and for this case is not very large (computationally not expensive, but still sparse system). However, for bearing only SLAM there are some problems due to the singularities of the *H* matrix (hence, the solution is under-determined). To overcome this problem a damped version of Gauss-Newton is used. Thus at every iteration, instead of solving the system *H∆x = b*, this solves a damped version of the system:
+*(H + λI)∆x = b*. Intitively, the higher is the damping factor *λ*, the smaller are the increments.
 
 #### Chi error and sparsity of H matrix
+
+It is important to point out the structure of the system, since the *H* matrix is a sparse matrix, depending only on the structure of the observations while the *b* vector is fully populated. The linear system is easily solved in octave using the formulae
+
+```dx=-(H\b)```
+
+where *dx* is the pertubation vector that summed (*boxplus*, see next session) to the original state allows decrease the error.
 
 ![Chi error and H matrix](images/pic.jpg)
 
@@ -53,6 +59,7 @@ This work has been developed incorporating code previously implemented by *Giorg
 
 #### References
 
-[1](http://www.dis.uniroma1.it/~grisetti/teaching/lectures-ls-slam-master_2015_16/web/reading_material/grisetti12stest.pdf)
-[2](http://www2.informatik.uni-freiburg.de/~stachnis/pdf/grisetti10titsmag.pdf)
+[Grisetti, *Least Squares SLAM*](http://www.dis.uniroma1.it/~grisetti/teaching/lectures-ls-slam-master_2015_16/web/reading_material/grisetti12stest.pdf)
+
+[Grisetti, Kummerle, Stachniss and Burgard, *A tutorial on graph-based SLAM*](http://www2.informatik.uni-freiburg.de/~stachnis/pdf/grisetti10titsmag.pdf)
 
